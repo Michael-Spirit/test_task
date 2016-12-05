@@ -43,10 +43,12 @@ def index(request, template='index.html'):
         form = ProductForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "You added product, congratz")
+            messages.success(
+                request, "You have successfully added the product.")
             return redirect(template)
         else:
-            messages.error(request, "Smth goes wrong with adding product")
+            messages.error(
+                request, "Something went wrong with adding the product.")
             return TemplateResponse(request, template,
                                     {'products': products, 'form': form})
 
@@ -75,10 +77,11 @@ def get(request, product_slug, template='product/product.html'):
                 comment.author = request.user.username
             comment.product = product
             comment.save()
-            messages.success(request, "You commented this product")
+            messages.success(request, "You commented on the product")
             return redirect(product.get_absolute_url())
         else:
-            messages.error(request, "Smth goes wrong with comment")
+            messages.error(
+                request, "Something went wrong with adding a comment.")
             return TemplateResponse(
                 request, template, {
                     'form': form,
@@ -102,7 +105,7 @@ def register(request, template='registration/register.html'):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "You have successful registered")
+            messages.success(request, "You have successfully registered.")
             return redirect('index')
         else:
             return TemplateResponse(request, template, {'form': form})
@@ -121,7 +124,7 @@ def like(request, product_slug):
     if request.method == 'POST':
         if not product.likes.filter(id=user.id).exists():
             product.likes.add(user)
-            messages.success(request, 'You liked this')
+            messages.success(request, 'You liked this.')
 
     # catch messages for ajax
     for message in messages.get_messages(request):
