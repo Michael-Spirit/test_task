@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static staticfiles %}
+
+{% block title %}
+    {{ product.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-8 col-md-offset-2">
+        <div class="container">
+            <div class="row">
+                <div id="div_messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="alert {% if message.tags == 'error' %}alert-danger{% endif %} alert-{{ message.tags }}">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+            <tbody>
+                <tr data-status="pagado">
+                    <td>
+                        <div class="media">
+                            <div class="media-body">
+                                <span class="media-meta pull-right">&nbsp;
+                                <b id="likes_{{ product.slug }}">likes: {{ product.total_likes }}</b>
+                                {% if not liked %}
+                                    <a id="like" href="#">+</a>
+                                {% endif %}
+                                </span>
+                                <span class="media-meta pull-right"><u>${{ product.price }}</u></span>
+                                <h4 class="title">{{ product.name }}</h4>
+                                <p style="height: 300px" class="summary well well-lg"><i>{{ product.description }}</i></p>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+			</table>
+		</div>
+
+        <div class="container">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class="comment-tabs">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="active"><a><h4 class="reviews text-capitalize">Comments</h4></a></li>
+                    </ul>
+                    <div class="tab-content">
+                    {% for comment in comments %}
+                        <ul class="media-list">
+                            <li class="media">
+                                <div class="media-body">
+                                    <div class="well well-lg">
+                                        <h4 class="media-heading text-uppercase reviews">{{ comment.author }}</h4>
+                                        <ul class="media-date text-uppercase reviews list-inline">
+                                            {{ comment.created_at }}
+                                        </ul>
+                                        <p class="media-comment">
+                                            {{ comment.text }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    {% empty %}
+                    <ul class="media-list">
+                        <li class="media">
+                            <div class="media-body">
+                                <div class="well well-lg">
+                                    No comments yet
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    {% endfor %}
+                    {{ form.non_field_errors }}
+                    <form method="post" class="form-inline" role="form">{% csrf_token %}
+                        <div class="form-group">
+                            <input name="text" class="form-control" type="text" placeholder="Your comment" />
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default">Add</button>
+                        </div>
+                        {{ form.text.errors }}
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $('#like').click(function(){
+        $.ajax({
+            type: "POST",
+            url: "{% url 'like' product.slug  %}",
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            dataType: "json",
+            success: function(response) {
+                $('#likes_{{ product.slug }}').text(response.likes_count);
+                $.each(response.data.messages, function (i, m) {
+                    $("#div_messages").append("<div class='alert alert-"+m.tags+"''>"+m.message+"</div>").delay(5000).fadeOut(2000);
+                });
+            }
+        });
+    });
+    </script>
+
+{% endblock  %}

@@ -1,0 +1,5 @@
+Django==1.10.3
+django-autoslug
+mysqlclient
+ipython==4.2.0
+flake8

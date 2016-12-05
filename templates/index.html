@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Products
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+    {% if messages %}
+        <div class="row">
+            <div>
+            {% for message in messages %}
+                <p class="alert {% if message.tags == 'error' %}alert-danger{% endif %} alert-{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <section class="content">
+            <div class="form-group inline-group col-md-2 pull-right">
+                <select id="select_sort" name="select_sort" class="form-control">
+                    <option value="" selected>Pick a Sort type</option>
+                    <option value="{% url 'index' %}">Default</option>
+                    <option value="{% url 'index' %}?sort=likes">Less likes</option>
+                    <option value="{% url 'index' %}?sort=-likes">More likes</option>
+                </select>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="table-container">
+                            <table class="table">
+                            <tbody>
+                            {% for product in products %}
+                                <tr data-status="pagado">
+                                    <td>
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <span style="color: #2f8eaa;" class="media-meta pull-right">&nbsp;likes: ({{ product.total_likes }})</span>
+                                                <span class="media-meta pull-right"><u>${{ product.price }}</u></span>
+                                                <a href="{{ product.get_absolute_url }}"><h4 class="title">{{ product.name }}</h4></a>
+                                                <p class="summary"><i>{{ product.description }}</i></p>
+											</div>
+										</div>
+									</td>
+								</tr>
+                            {% endfor %}
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+                {% if products.has_other_pages %}
+                    <ul class="pagination">
+                    {% if products.has_previous %}
+                        <li><a href="?page={{ products.previous_page_number }}">Back</a></li>
+                    {% else %}
+                        <li class="disabled"><span>Back</span></li>
+                    {% endif %}
+
+                    {% for i in products.paginator.page_range %}
+                        {% if products.number == i %}
+                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% else %}
+                            <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                        <li><a href="?page={{ products.next_page_number }}">Next</a></li>
+                    {% else %}
+                        <li class="disabled"><span>Next</span></li>
+                    {% endif %}
+                    </ul>
+                {% endif %}
+
+            <button type="button" onclick="$('#add_product_form').show(); $('#add_product').hide()" id="add_product" name="submit" class="btn btn-primary pull-right">Add product</button>
+
+            <div style="display: none" class="form-area" id="add_product_form">
+            {{ form.non_field_errors }}
+                <form novalidate method="POST" role="form">{% csrf_token %}
+                    <br style="clear:both">
+                    <h3 style="margin-bottom: 25px; text-align: center;">Add product Form</h3>
+                    {{ form.name.errors }}
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+					</div>
+
+                    {{ form.description.errors }}
+                    <div class="form-group">
+                        <textarea name="description" class="form-control" id="description" placeholder="Description" maxlength="140" rows="7"></textarea>
+                    </div>
+
+                    {{ form.price.errors }}
+                    <div class="form-group">
+                        <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
+                        <div class="input-group">
+                            <div class="input-group-addon">$</div>
+                                <input name="price" type="number" class="form-control" placeholder="Price">
+                            <div class="input-group-addon">.00</div>
+                        </div>
+                    </div>
+
+                    <button onclick="$('#add_product_form').hide(); $('#add_product').show()"  type="submit" class="btn btn-primary pull-right">Add</button>
+                </form>
+            </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<script>
+    $('#select_sort').bind('change', function () {
+        var url = $(this).val();
+        if (url != '') {
+            window.location = url;
+        }
+        return false;
+    });
+</script>
+
+{% endblock  %}
