@@ -27,15 +27,15 @@
                 </li>
             </ul>
             {% else %}
-            <form id="loginForm" method="post" action="{% url 'login' %}?next={{ request.path | urlencode }}" class="navbar-form navbar-right">{% csrf_token %}
+            <form id="loginForm" novalidate method="post" action="{% url 'login' %}?next={{ request.path | urlencode }}" class="navbar-form navbar-right">{% csrf_token %}
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                        <input  type="text" class="form-control" name="username" placeholder="Username"/>
+                        {{ login_form.username }}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                        <input type="password" class="form-control" name="password" placeholder="Password" />
+                        {{ login_form.password }}
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
                     <a href="{% url 'register' %}"><button type="button" class="btn btn-default">Register</button></a>

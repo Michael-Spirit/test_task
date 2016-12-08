@@ -5,14 +5,14 @@ except ImportError:
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth import login
 from datetime import timedelta
 from django.utils import timezone
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from product.forms import CommentForm, ProductForm
+from product.forms import CommentForm, ProductForm, MyUserCreationForm
 
 from .models import Product, Comment
 
@@ -45,7 +45,7 @@ def index(request, template='index.html'):
             form.save()
             messages.success(
                 request, "You have successfully added the product.")
-            return redirect(template)
+            return redirect('index')
         else:
             messages.error(
                 request, "Something went wrong with adding the product.")
@@ -101,7 +101,7 @@ def get(request, product_slug, template='product/product.html'):
 
 def register(request, template='registration/register.html'):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -110,21 +110,21 @@ def register(request, template='registration/register.html'):
         else:
             return TemplateResponse(request, template, {'form': form})
 
-    form = UserCreationForm()
+    form = MyUserCreationForm()
     return render(request, template, {'form': form})
 
 
 @login_required
+@require_POST
 def like(request, product_slug):
     data = {}
     django_messages = []
     user = request.user
     product = get_object_or_404(Product, slug=product_slug)
 
-    if request.method == 'POST':
-        if not product.likes.filter(id=user.id).exists():
-            product.likes.add(user)
-            messages.success(request, 'You liked this.')
+    if not product.likes.filter(id=user.id).exists():
+        product.likes.add(user)
+        messages.success(request, 'You liked this.')
 
     # catch messages for ajax
     for message in messages.get_messages(request):

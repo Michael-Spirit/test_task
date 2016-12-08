@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from autoslug import AutoSlugField
 
 
@@ -14,7 +15,7 @@ class Product(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return "/products/%s/" % self.slug
+        return reverse('product', kwargs={'product_slug': self.slug})
 
     @property
     def total_likes(self):
@@ -32,7 +33,7 @@ class Comment(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return "/products/%s/" % self.product.slug
+        return reverse('comment', kwargs={'product_slug': self.product.slug})
 
     def __str__(self):
         return self.product.name

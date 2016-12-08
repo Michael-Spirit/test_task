@@ -78,9 +78,9 @@
                     </ul>
                     {% endfor %}
                     {{ form.non_field_errors }}
-                    <form method="post" class="form-inline" role="form">{% csrf_token %}
+                    <form method="post" novalidate class="form-inline" role="form">{% csrf_token %}
                         <div class="form-group">
-                            <input name="text" class="form-control" type="text" placeholder="Your comment" />
+                            {{ form.text }}
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-default">Add</button>

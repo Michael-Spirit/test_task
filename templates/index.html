@@ -86,12 +86,12 @@
                     <h3 style="margin-bottom: 25px; text-align: center;">Add product Form</h3>
                     {{ form.name.errors }}
                     <div class="form-group">
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                        {{ form.name }}
 					</div>
 
                     {{ form.description.errors }}
                     <div class="form-group">
-                        <textarea name="description" class="form-control" id="description" placeholder="Description" maxlength="140" rows="7"></textarea>
+                        {{ form.description }}
                     </div>
 
                     {{ form.price.errors }}
@@ -99,7 +99,7 @@
                         <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
                         <div class="input-group">
                             <div class="input-group-addon">$</div>
-                                <input name="price" type="number" class="form-control" placeholder="Price">
+                                {{ form.price }}
                             <div class="input-group-addon">.00</div>
                         </div>
                     </div>
