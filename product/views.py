@@ -1,3 +1,5 @@
+from django.views.decorators.cache import cache_page
+
 try:
     from django.utils import simplejson as json
 except ImportError:
@@ -116,11 +118,12 @@ def register(request, template='registration/register.html'):
 
 @login_required
 @require_POST
+@cache_page(60 * 15)  # cached for 15 minutes
 def like(request, product_slug):
     data = {}
     django_messages = []
     user = request.user
-    product = get_object_or_404(Product, slug=product_slug)
+    product = Product.objects.select_related().get(slug=product_slug)
 
     if not product.likes.filter(id=user.id).exists():
         product.likes.add(user)
